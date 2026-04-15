@@ -1,6 +1,8 @@
 {
   "installCommand": "corepack enable && (yarn install --immutable || (echo \"--- yarn install failed; dumping build logs ---\" && (ls -la /tmp || true) && (ls -la /tmp/xfs-* || true) && (for f in /tmp/xfs-*/build.log; do echo \"--- $f ---\"; cat \"$f\"; done) && exit 1))",
-  "rewrites":  [
-    {"source": "/(.*)", "destination": "/"}
+  "buildCommand": "yarn workspace @uniswap/interface run build:production",
+  "outputDirectory": "apps/web/build",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
