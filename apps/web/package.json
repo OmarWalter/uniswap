@@ -17,7 +17,7 @@
     "sitemap:generate": "node scripts/generate-sitemap.js",
     "i18n:upload": "bash ./scripts/crowdin.sh upload",
     "i18n:download": "bash ./scripts/crowdin.sh download",
-    "i18n:download:if-missing": "ONLY_IF_MISSING=1 bash ./scripts/crowdin.sh download",
+    "i18n:download:if-missing": "node ./scripts/crowdin-download-if-missing.js",
     "i18n:extract": "i18next && node ./scripts/fix-empty-i18n-values.js",
     "prepare": "node scripts/compile-ajv-validators.js",
     "start": "craco start",
