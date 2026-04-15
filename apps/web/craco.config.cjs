@@ -10,25 +10,7 @@ const { IgnorePlugin, ProvidePlugin } = require('webpack')
 const { RetryChunkLoadPlugin } = require('webpack-retry-chunk-load-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
-function getGitCommitHash() {
-  const fromEnv =
-    process.env.VERCEL_GIT_COMMIT_SHA ||
-    process.env.GITHUB_SHA ||
-    process.env.CI_COMMIT_SHA ||
-    process.env.COMMIT_REF
-  if (fromEnv) {
-    return fromEnv.trim()
-  }
-  try {
-    return execSync('git rev-parse HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
-      .toString()
-      .trim()
-  } catch {
-    return 'unknown'
-  }
-}
-
-const commitHash = getGitCommitHash()
+const commitHash = execSync('git rev-parse HEAD').toString().trim()
 const isProduction = process.env.NODE_ENV === 'production'
 
 process.env.REACT_APP_GIT_COMMIT_HASH = commitHash
