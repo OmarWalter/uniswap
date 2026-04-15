@@ -33,6 +33,6 @@ files: [
     # Translation files filter
     # e.g. "/resources/%two_letters_code%/%original_file_name%"
     #
-    "translation": "/apps/web/src/i18n/locales/%locale%/%original_file_name%",
+    "translation": "/apps/web/src/i18n/locales/%locale%/%en-US.json%",
   }
 ]
