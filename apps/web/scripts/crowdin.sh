@@ -1,24 +1,27 @@
 #!/bin/bash
 
-if [ -n "$ONLY_IF_MISSING" ]; then
-  if [ -e "$file" ]; then
-    echo "Translation exist already, skipping download"
-    exit 0
-  fi
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROOT_DIR="$(cd "$APP_DIR/../.." && pwd)"
+DEFAULT_LOCALE_FILE="$APP_DIR/src/i18n/locales/source/en-US.json"
+
+cd "$APP_DIR"
+
+if [ -n "$ONLY_IF_MISSING" ] && [ -e "$DEFAULT_LOCALE_FILE" ]; then
+  echo "Default locale exists already, skipping Crowdin download"
+  exit 0
 fi
 
-if [ ! -e "$file" ]; then
-    echo "File does not exist."
-    # Do something here, for example:
-    # touch "$file"  # Create the file
-else
-    echo "File exists."
+if [ ! -f "$APP_DIR/crowdin.yml" ] && [ ! -f "$APP_DIR/crowdin.yaml" ] && [ ! -f "$APP_DIR/.crowdin.yml" ] && [ ! -f "$APP_DIR/.crowdin.yaml" ]; then
+  echo "No Crowdin config found in $APP_DIR, skipping"
+  exit 0
 fi
 
-# install in CI
 if ! which crowdin >/dev/null 2>&1; then
-    echo "Installing"
-    npm i -g @crowdin/cli@3.14.0
+  echo "Installing"
+  npm i -g @crowdin/cli@3.14.0
 fi
 
 if [ -n "$CROWDIN_WEB_ACCESS_TOKEN" ]; then
@@ -26,5 +29,5 @@ if [ -n "$CROWDIN_WEB_ACCESS_TOKEN" ]; then
   npx crowdin "$@"
 else
   echo "Running crowdin using dotenv"
-  npx dotenv -e ../../.env.defaults.local -- npx crowdin "$@"
+  npx dotenv -e "$ROOT_DIR/.env.defaults.local" -- npx crowdin "$@"
 fi
