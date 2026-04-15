@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- web Keyring mirrors upstream; split would diverge from interface */
 import { Buffer } from 'buffer'
 /* oxlint-disable max-params */
 /* oxlint-disable max-lines */
@@ -16,7 +17,11 @@ import {
   SecretPayload,
 } from 'wallet/src/features/wallet/Keyring/crypto'
 import { IKeyring } from 'wallet/src/features/wallet/Keyring/Keyring'
-import { ENCRYPTION_KEY_STORAGE_KEY, PersistedStorage, prefix } from 'wallet/src/utils/persistedStorage'
+import {
+  ENCRYPTION_KEY_STORAGE_KEY,
+  PersistedStorage,
+  prefix,
+} from 'wallet/src/utils/persistedStorage'
 
 const mnemonicPrefix = '.mnemonic.'
 const privateKeyPrefix = '.privateKey.'
@@ -41,7 +46,7 @@ export class WebKeyring implements IKeyring {
 
   constructor(
     private storage = new PersistedStorage('local'),
-    private session = new PersistedStorage('session'),
+    private session = new PersistedStorage('session')
   ) {
     this.generateAndStoreMnemonic = this.generateAndStoreMnemonic.bind(this)
     this.generateAddressForMnemonic = this.generateAddressForMnemonic.bind(this)
@@ -69,7 +74,7 @@ export class WebKeyring implements IKeyring {
         hash: 'SHA-256',
       },
       true, // extractable
-      ['encrypt', 'decrypt'],
+      ['encrypt', 'decrypt']
     )
     // Export the public key in 'spki' format to match BE expectations
     const publicKeySpki = await crypto.subtle.exportKey('spki', keyPair.publicKey)
@@ -78,7 +83,10 @@ export class WebKeyring implements IKeyring {
     return publicKeyBase64
   }
 
-  async decryptMnemonicForPasskey(encryptedMnemonic: string, publicKeyBase64: string): Promise<string> {
+  async decryptMnemonicForPasskey(
+    encryptedMnemonic: string,
+    publicKeyBase64: string
+  ): Promise<string> {
     const keyPair = this.keysMap.get(publicKeyBase64)
     if (!keyPair) {
       throw new Error('No key pair found')
@@ -88,7 +96,7 @@ export class WebKeyring implements IKeyring {
         name: 'RSA-OAEP',
       },
       keyPair.privateKey,
-      Buffer.from(encryptedMnemonic, 'base64'),
+      Buffer.from(encryptedMnemonic, 'base64')
     )
     return new TextDecoder().decode(decryptedMnemonic)
   }
@@ -143,7 +151,9 @@ export class WebKeyring implements IKeyring {
       const firstMnemonicId = (await this.getMnemonicIds())[0]
 
       if (!firstMnemonicId) {
-        throw new Error(`${ErrorType.RetrieveMnemonicError}: Attempted to unlock wallet, but storage is empty.`)
+        throw new Error(
+          `${ErrorType.RetrieveMnemonicError}: Attempted to unlock wallet, but storage is empty.`
+        )
       }
 
       const mnemonicKey = this.keyForMnemonicId(firstMnemonicId)
@@ -188,7 +198,10 @@ export class WebKeyring implements IKeyring {
       if (!secretPayload || !secretPayload.ciphertext) {
         return false
       }
-      const passwordPasswordEncryptionKey = await getEncryptionKeyFromPassword({ password, secretPayload })
+      const passwordPasswordEncryptionKey = await getEncryptionKeyFromPassword({
+        password,
+        secretPayload,
+      })
       const passwordPasswordBase64String = await exportKey(passwordPasswordEncryptionKey)
       return currentPasswordBase64String === passwordPasswordBase64String
     } catch (_e) {
@@ -211,7 +224,9 @@ export class WebKeyring implements IKeyring {
       const firstMnemonicId = (await this.getMnemonicIds())[0]
 
       if (!firstMnemonicId) {
-        throw new Error(`${ErrorType.RetrieveMnemonicError}: Attempted to change password, but storage is empty.`)
+        throw new Error(
+          `${ErrorType.RetrieveMnemonicError}: Attempted to change password, but storage is empty.`
+        )
       }
 
       // Get all addresses with stored private keys and decrypt them BEFORE changing password
@@ -242,12 +257,21 @@ export class WebKeyring implements IKeyring {
 *                    Currently only used on web.
    * @returns public address from the mnemonic's first derived private key
    */
-  async importMnemonic(mnemonic: string, password: string, changingPassword = false): Promise<string> {
+  async importMnemonic(
+    mnemonic: string,
+    password: string,
+    changingPassword = false
+  ): Promise<string> {
     const wallet = Wallet.fromMnemonic(mnemonic)
 
     const address = wallet.address
 
-    const mnemonicId = await this.storeNewMnemonic({ mnemonic, password, address, forceOverwrite: changingPassword })
+    const mnemonicId = await this.storeNewMnemonic({
+      mnemonic,
+      password,
+      address,
+      forceOverwrite: changingPassword,
+    })
     if (!mnemonicId) {
       throw changingPassword
         ? new Error(`${ErrorType.StoreMnemonicError}: Failed to store mnemonic with new password`)
@@ -299,7 +323,11 @@ export class WebKeyring implements IKeyring {
     const mnemonicStorageValue = await this.storage.getItem(mnemonicKey)
 
     if (mnemonicStorageValue !== undefined && !forceOverwrite) {
-      logger.debug('Keyring.web', 'storeNewMnemonic', 'mnemonic already stored. Did you mean to reimport?')
+      logger.debug(
+        'Keyring.web',
+        'storeNewMnemonic',
+        'mnemonic already stored. Did you mean to reimport?'
+      )
 
       return address
     }
@@ -330,7 +358,7 @@ export class WebKeyring implements IKeyring {
   private async retrieveMnemonic(
     secretPayload: SecretPayload,
     encryptionKey: CryptoKey,
-    expectedAddress: string,
+    expectedAddress: string
   ): Promise<string> {
     try {
       if (!secretPayload.ciphertext) {
@@ -414,7 +442,11 @@ export class WebKeyring implements IKeyring {
    * from the mnemonic, non-inclusive
    * @returns public addresses associated with the private keys generated from the mnemonic at the given derivation index range
    */
-  async generateAddressesForMnemonic(mnemonic: string, startIndex: number, stopIndex: number): Promise<string[]> {
+  async generateAddressesForMnemonic(
+    mnemonic: string,
+    startIndex: number,
+    stopIndex: number
+  ): Promise<string[]> {
     if (startIndex >= stopIndex) {
       throw new Error('End derivation index must be greater than start derivation index')
     }
@@ -451,7 +483,11 @@ export class WebKeyring implements IKeyring {
    * from the mnemonic
    * @returns public addresses associated with the private keys generated from the mnemonic at the given derivation index range
    */
-  async generateAddressesForMnemonicId(mnemonicId: string, startIndex: number, stopIndex: number): Promise<string[]> {
+  async generateAddressesForMnemonicId(
+    mnemonicId: string,
+    startIndex: number,
+    stopIndex: number
+  ): Promise<string[]> {
     const mnemonic = await this.retrieveMnemonicUnlocked(mnemonicId)
     return await this.generateAddressesForMnemonic(mnemonic, startIndex, stopIndex)
   }
@@ -493,7 +529,11 @@ export class WebKeyring implements IKeyring {
     const checkStored = await this.retrievePrivateKey(address)
 
     if (checkStored !== undefined) {
-      logger.debug('Keyring.web', 'storeNewPrivateKey', 'privateKey already stored. Did you mean to reimport?')
+      logger.debug(
+        'Keyring.web',
+        'storeNewPrivateKey',
+        'privateKey already stored. Did you mean to reimport?'
+      )
 
       return address
     }
@@ -517,7 +557,10 @@ export class WebKeyring implements IKeyring {
 
       const newPrivateKeyStorageKey = this.keyForPrivateKey(address)
       logger.debug('Keyring.web', 'storeNewPrivateKey', 'storing new private key')
-      await this.storage.setItem(newPrivateKeyStorageKey, JSON.stringify(secretPayloadWithCiphertext))
+      await this.storage.setItem(
+        newPrivateKeyStorageKey,
+        JSON.stringify(secretPayloadWithCiphertext)
+      )
 
       return address
     } catch (e) {
@@ -530,7 +573,9 @@ export class WebKeyring implements IKeyring {
    * @param addresses array of addresses to decrypt private keys for
    * @returns array of address/privateKey pairs
    */
-  private async decryptPrivateKeys(addresses: string[]): Promise<{ address: string; privateKey: string }[]> {
+  private async decryptPrivateKeys(
+    addresses: string[]
+  ): Promise<{ address: string; privateKey: string }[]> {
     const privateKeyPairs: { address: string; privateKey: string }[] = []
 
     for (const address of addresses) {
@@ -555,7 +600,9 @@ export class WebKeyring implements IKeyring {
    * Encrypts private keys with the current session encryption key
    * @param privateKeyPairs array of address/privateKey pairs to re-encrypt
    */
-  private async encryptAndStorePrivateKeys(privateKeyPairs: { address: string; privateKey: string }[]): Promise<void> {
+  private async encryptAndStorePrivateKeys(
+    privateKeyPairs: { address: string; privateKey: string }[]
+  ): Promise<void> {
     if (privateKeyPairs.length === 0) {
       return
     }
@@ -581,12 +628,15 @@ export class WebKeyring implements IKeyring {
 
         // Store the re-encrypted private key
         const privateKeyStorageKey = this.keyForPrivateKey(address)
-        await this.storage.setItem(privateKeyStorageKey, JSON.stringify(secretPayloadWithCiphertext))
+        await this.storage.setItem(
+          privateKeyStorageKey,
+          JSON.stringify(secretPayloadWithCiphertext)
+        )
 
         logger.debug(
           'Keyring.web',
           'reencryptDecryptedPrivateKeys',
-          `Successfully re-encrypted private key for address ${address}`,
+          `Successfully re-encrypted private key for address ${address}`
         )
       } catch (error) {
         logger.error(error, {
@@ -646,7 +696,11 @@ export class WebKeyring implements IKeyring {
   /**
    * @returns the Signature of the signed transaction in string form.
    **/
-  async signTransactionHashForAddress(address: string, hash: string, chainId: number): Promise<string> {
+  async signTransactionHashForAddress(
+    address: string,
+    hash: string,
+    chainId: number
+  ): Promise<string> {
     // Ethers.js doesn't differentiate between signing a random hash and signing a transaction hash
     return this.signHashForAddress(address, hash, chainId)
   }

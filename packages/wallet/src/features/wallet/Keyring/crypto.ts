@@ -13,7 +13,8 @@ export const AES_GCM_PARAMS: AesKeyGenParams = { name: 'AES-GCM', length: 256 }
 
 // TODO: improve encoding/decoding
 export const encodeForStorage = (payload: BufferSource): string => {
-  const uint8Array = payload instanceof Uint8Array ? payload : new Uint8Array(payload as ArrayBuffer)
+  const uint8Array =
+    payload instanceof Uint8Array ? payload : new Uint8Array(payload as ArrayBuffer)
   return uint8Array.toString()
 }
 export const decodeFromStorage = (payload: string): BufferSource =>
@@ -45,7 +46,12 @@ interface EncryptParams {
   additionalData?: string
 }
 // encrypts and returns the cipher text
-export async function encrypt({ plaintext, encryptionKey, iv, additionalData }: EncryptParams): Promise<string> {
+export async function encrypt({
+  plaintext,
+  encryptionKey,
+  iv,
+  additionalData,
+}: EncryptParams): Promise<string> {
   const encoder = new TextEncoder()
   const ciphertext = await crypto.subtle.encrypt(
     {
@@ -54,7 +60,7 @@ export async function encrypt({ plaintext, encryptionKey, iv, additionalData }: 
       additionalData: encoder.encode(additionalData),
     },
     encryptionKey,
-    encoder.encode(plaintext),
+    encoder.encode(plaintext)
   )
   return new Uint8Array(ciphertext).toString()
 }
@@ -84,7 +90,7 @@ export async function decrypt({
         additionalData: encoder.encode(additionalData),
       },
       encryptionKey,
-      ciphertext,
+      ciphertext
     )
     return decoder.decode(result)
   } catch (_error) {
@@ -102,7 +108,10 @@ export async function exportKey(key: CryptoKey): Promise<string> {
 }
 
 export async function convertBytesToCryptoKey(bytes: BufferSource): Promise<CryptoKey> {
-  return window.crypto.subtle.importKey('raw', bytes, { name: 'AES-GCM' }, true, ['encrypt', 'decrypt'])
+  return window.crypto.subtle.importKey('raw', bytes, { name: 'AES-GCM' }, true, [
+    'encrypt',
+    'decrypt',
+  ])
 }
 
 export async function convertBase64SeedToCryptoKey(keyBase64: string): Promise<CryptoKey> {
@@ -120,11 +129,16 @@ export async function getEncryptionKeyFromBuffer({
   const { name, iterations, hash } = secretPayload
   const salt = decodeFromStorage(secretPayload.salt)
   const pbkdf2Params = { salt, name, iterations, hash }
-  const keyMaterial = await crypto.subtle.importKey('raw', buffer, PBKDF2_PARAMS.name, false, ['deriveKey'])
+  const keyMaterial = await crypto.subtle.importKey('raw', buffer, PBKDF2_PARAMS.name, false, [
+    'deriveKey',
+  ])
 
   // TODO: This should use Argon2 like ToB recommended for the mobile app
   // https://github.com/Uniswap/universe/blob/main/apps/mobile/ios/EncryptionHelper.swift
-  return crypto.subtle.deriveKey(pbkdf2Params, keyMaterial, AES_GCM_PARAMS, true, ['encrypt', 'decrypt'])
+  return crypto.subtle.deriveKey(pbkdf2Params, keyMaterial, AES_GCM_PARAMS, true, [
+    'encrypt',
+    'decrypt',
+  ])
 }
 
 export async function getEncryptionKeyFromPassword({

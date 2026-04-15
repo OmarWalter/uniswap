@@ -30,9 +30,11 @@
   "packageManager": "yarn@3.2.3",
   "private": true,
   "resolutionsComments": {
-    "immer": "this fixes yarn typecheck in mobile app, see https://github.com/reduxjs/redux-toolkit/issues/1806"
+    "immer": "this fixes yarn typecheck in mobile app, see https://github.com/reduxjs/redux-toolkit/issues/1806",
+    "dtrace-provider": "bunyan optional dep; native gyp fails on Vercel/Linux — stub avoids node-gyp"
   },
   "resolutions": {
+    "dtrace-provider": "npm:noop2@2.0.0",
     "cypress": "12.12.0",
     "@babel/preset-env": "7.23.3",
     "immer": "9.0.21",
