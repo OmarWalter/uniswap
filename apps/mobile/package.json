@@ -184,7 +184,6 @@
     "jest-transformer-svg": "2.0.0",
     "madge": "6.1.0",
     "mockdate": "3.0.5",
-    "postinstall-postinstall": "2.1.0",
     "react-devtools": "4.28.0",
     "react-dom": "18.2.0",
     "react-native-apollo-devtools-client": "1.0.4",

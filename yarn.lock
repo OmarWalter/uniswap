@@ -13729,7 +13729,6 @@ __metadata:
     poisson-disk-sampling: 2.3.1
     polished: 3.3.2
     polyfill-object.fromentries: 1.0.1
-    postinstall-postinstall: 2.1.0
     prettier: latest
     process: 0.11.10
     qrcode.react: 3.1.0
@@ -13918,7 +13917,6 @@ __metadata:
     madge: 6.1.0
     mockdate: 3.0.5
     no-yolo-signatures: 0.0.2
-    postinstall-postinstall: 2.1.0
     react: 18.2.0
     react-devtools: 4.28.0
     react-dom: 18.2.0
@@ -36266,13 +36264,6 @@ __metadata:
     picocolors: ^1.0.0
     source-map-js: ^1.0.2
   checksum: 220d9d0bf5d65be7ed31006c523bfb11619461d296245c1231831f90150aeb4a31eab9983ac9c5c89759a3ca8b60b3e0d098574964e1691673c3ce5c494305ae
-  languageName: node
-  linkType: hard
-
-"postinstall-postinstall@npm:2.1.0":
-  version: 2.1.0
-  resolution: "postinstall-postinstall@npm:2.1.0"
-  checksum: e1d34252cf8d2c5641c7d2db7426ec96e3d7a975f01c174c68f09ef5b8327bc8d5a9aa2001a45e693db2cdbf69577094d3fe6597b564ad2d2202b65fba76134b
   languageName: node
   linkType: hard
 

@@ -19,10 +19,10 @@
     "i18n:download": "./scripts/crowdin.sh download",
     "i18n:download:if-missing": "ONLY_IF_MISSING=1 ./scripts/crowdin.sh download",
     "i18n:extract": "i18next && node ./scripts/fix-empty-i18n-values.js",
-    "prepare": "concurrently \"npm:ajv\"",
+    "prepare": "node scripts/compile-ajv-validators.js",
     "start": "craco start",
     "start:cloud": "NODE_OPTIONS=--dns-result-order=ipv4first PORT=3001 npx wrangler pages dev --compatibility-flags=nodejs_compat --compatibility-date=2023-08-01 --proxy=3001 --port=3000 -- yarn start",
-    "build:production": "yarn i18n:download:if-missing && craco build",
+    "build:production": "node scripts/compile-ajv-validators.js && yarn i18n:download:if-missing && craco build",
     "analyze": "source-map-explorer 'build/static/js/*.js' --no-border-checks --gzip",
     "serve": "serve build -s -l 3000",
     "lint": "yarn eslint --ignore-path .gitignore --cache --cache-location node_modules/.cache/eslint/ .",
@@ -145,7 +145,6 @@
     "madge": "6.1.0",
     "mini-css-extract-plugin": "^2.7.6",
     "path-browserify": "1.0.1",
-    "postinstall-postinstall": "2.1.0",
     "prettier": "latest",
     "process": "0.11.10",
     "react-scripts": "5.0.1",
@@ -305,7 +304,6 @@
     "zustand": "4.4.6"
   },
   "engines": {
-    "npm": "please-use-yarn",
     "node": "24.x",
     "yarn": ">=1.22"
   }
