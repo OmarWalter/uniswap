@@ -111,7 +111,7 @@
     "lfg": "yarn g:prepare && yarn mobile env:local:download && yarn stretch env:local:download && yarn g:build && yarn mobile pod && yarn mobile ios",
     "mobile": "yarn workspace @uniswap/mobile",
     "local:check": "./scripts/local-version-check.sh",
-    "postinstall": "node -e \"const {execSync}=require('child_process'); const isCI=!!process.env.CI||!!process.env.VERCEL; if(!isCI){execSync('husky install',{stdio:'inherit'}); execSync('yarn g:prepare',{stdio:'inherit'})} else {console.log('Skipping husky and g:prepare in CI/Vercel postinstall')}}\"",
+    "postinstall": "node -e \"const {execSync}=require('child_process'); const isCI=!!process.env.CI||!!process.env.VERCEL; if(!isCI){execSync('husky install',{stdio:'inherit'}); execSync('yarn g:prepare',{stdio:'inherit'})} else {console.log('Skipping husky and g:prepare in CI/Vercel postinstall')}\"",
     "stretch": "yarn workspace @uniswap/stretch",
     "ui": "yarn workspace ui",
     "upgrade:tamagui": "yarn up '*tamagui*' '@tamagui/*'",
