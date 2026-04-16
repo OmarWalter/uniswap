@@ -79,10 +79,8 @@ describe('Token details', () => {
     // Contract address should be displayed
     cy.contains(shortenAddress('0x1eFBB78C8b917f67986BcE54cE575069c0143681')).should('exist')
 
-    // Warning label should show if relevant ([spec](https://www.notion.so/3f7fce6f93694be08a94a6984d50298e))
-    cy.get('[data-cy="token-safety-message"]')
-      .should('include.text', 'Warning')
-      .and('include.text', "This token isn't traded on leading U.S. centralized exchanges")
+    // Non-blocked token warnings are not shown in this fork
+    cy.get('[data-cy="token-safety-message"]').should('not.exist')
   })
 
   describe('swapping', () => {

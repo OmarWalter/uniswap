@@ -6,13 +6,13 @@ import TokenSafetyLabel from 'components/TokenSafety/TokenSafetyLabel'
 import {
   displayWarningLabel,
   getWarningCopy,
-  StrongWarning,
   TOKEN_SAFETY_ARTICLE,
   useTokenWarning,
   Warning,
 } from 'constants/tokenSafety'
 import { useToken } from 'hooks/Tokens'
 import { Trans } from 'i18n'
+import { useCallback, useLayoutEffect, useRef } from 'react'
 import { ExternalLink as LinkIconFeather } from 'react-feather'
 import { Text } from 'rebass'
 import { useAddUserToken } from 'state/user/hooks'
@@ -242,7 +242,7 @@ export default function TokenSafety({
 
   // If a warning is acknowledged, import these tokens
   const addToken = useAddUserToken()
-  const acknowledge = () => {
+  const acknowledge = useCallback(() => {
     if (token1) {
       addToken(token1)
     }
@@ -250,6 +250,32 @@ export default function TokenSafety({
       addToken(token2)
     }
     onContinue()
+  }, [addToken, onContinue, token1, token2])
+
+  const autoSkippedRef = useRef(false)
+  useLayoutEffect(() => {
+    if (displayWarning) {
+      autoSkippedRef.current = false
+      return
+    }
+    if (tokenAddress && !token1) {
+      return
+    }
+    if (secondTokenAddress && !token2) {
+      return
+    }
+    if (!tokenAddress && !secondTokenAddress) {
+      return
+    }
+    if (autoSkippedRef.current) {
+      return
+    }
+    autoSkippedRef.current = true
+    acknowledge()
+  }, [acknowledge, displayWarning, secondTokenAddress, token1, token2, tokenAddress])
+
+  if (!displayWarning) {
+    return null
   }
 
   const { heading, description } = getWarningCopy(displayWarning, plural)
@@ -259,7 +285,7 @@ export default function TokenSafety({
     </StyledExternalLink>
   )
 
-  return displayWarning ? (
+  return (
     <Wrapper data-testid="TokenSafetyWrapper">
       <Container>
         <AutoColumn>
@@ -283,20 +309,6 @@ export default function TokenSafety({
           onBlocked={onBlocked}
           showCancel={showCancel}
         />
-      </Container>
-    </Wrapper>
-  ) : (
-    <Wrapper>
-      <Container>
-        <ShortColumn>
-          <SafetyLabel warning={StrongWarning} />
-        </ShortColumn>
-        <ShortColumn>
-          <InfoText>
-            {heading} {description} {learnMoreUrl}
-          </InfoText>
-        </ShortColumn>
-        <Buttons warning={StrongWarning} onCancel={onCancel} showCancel={true} />
       </Container>
     </Wrapper>
   )

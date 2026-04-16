@@ -98,13 +98,10 @@ export const BlockedWarning: Warning = {
 export function useTokenWarning(tokenAddress?: string, chainId?: ChainId | number): Warning | undefined {
   const currencyInfo = useCurrencyInfo(tokenAddress, chainId)
   switch (currencyInfo?.safetyLevel) {
-    case SafetyLevel.MediumWarning:
-      return MediumWarning
-    case SafetyLevel.StrongWarning:
-      return StrongWarning
     case SafetyLevel.Blocked:
       return BlockedWarning
     default:
+      // Medium/strong “unverified token” warnings disabled — no modal, icons, or inline messages for those levels.
       return undefined
   }
 }
